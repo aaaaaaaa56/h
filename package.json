@@ -1,18 +1,18 @@
 {
-  "name": "discord-selfbot",
+  "name": "discord-voice-bot",
   "version": "1.0.0",
-  "description": "Discord selfbot",
+  "description": "Discord 24/7 Voice Channel Bot",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "node index.js"
   },
+  "keywords": ["discord", "bot", "voice"],
+  "author": "",
+  "license": "MIT",
   "dependencies": {
-    "discord.js-selfbot-v13": "^3.4.3",
-    "@discordjs/voice": "^0.17.0"
+    "discord.js-selfbot-v13": "^3.0.0",
+    "@discordjs/voice": "^0.17.0",
     "express": "^4.18.2"
-
-  },
-  "engines": {
-    "node": "18.x"
   }
 }
