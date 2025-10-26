@@ -1,5 +1,6 @@
 const {Client} = require('discord.js-selfbot-v13');
 const {joinVoiceChannel} = require('@discordjs/voice');
+const express = require('express');
 
 const Care = new Client({
     checkUpdate: false,
@@ -13,12 +14,32 @@ const Care = new Client({
 
 const careStore = require('./careStore');
 
+// Express Server - حطه هنا قبل Care.login()
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get('/', (req, res) => {
+    res.send('Bot is running! 🤖');
+});
+
+app.get('/status', (req, res) => {
+    res.json({
+        status: 'online',
+        user: Care.user?.tag || 'Not logged in',
+        uptime: process.uptime()
+    });
+});
+
+app.listen(PORT, () => {
+    console.log(`Keep-alive server running on port ${PORT}`);
+});
+
+// Discord Bot Events
 Care.on('ready', async () => {
     console.log('Logged in as ' + Care.user.tag + '!');
     console.log('All Right Receive To : \nCare Store\nhttps://discord.gg/TEghZPgRmF');
     console.log('Join our Discord store for more: https://discord.gg/TEghZPgRmF');
     
-    // انتظر شوي قبل الدخول للروم
     setTimeout(async () => {
         await joinVC(Care, careStore);
     }, 3000);
@@ -43,19 +64,6 @@ Care.on('voiceStateUpdate', async (oldState, newState) => {
 
 Care.login(careStore.Token).catch(err => {
     console.error('Login failed:', err);
-});
-
-
-const express = require('express');
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.get('/', (req, res) => {
-    res.send('Bot is running! 🤖');
-});
-
-app.listen(PORT, () => {
-    console.log(`Keep-alive server running on port ${PORT}`);
 });
 
 async function joinVC(client, config) {
