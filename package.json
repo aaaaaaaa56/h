@@ -10,7 +10,8 @@
     "discord.js-selfbot-v13": "^2.14.13",
     "@discordjs/voice": "^0.17.0"
   },
+{
   "engines": {
-    "node": ">=16.x"
+    "node": "18.x"
   }
 }
