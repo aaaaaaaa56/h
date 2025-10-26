@@ -45,6 +45,19 @@ Care.login(careStore.Token).catch(err => {
     console.error('Login failed:', err);
 });
 
+
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get('/', (req, res) => {
+    res.send('Bot is running! 🤖');
+});
+
+app.listen(PORT, () => {
+    console.log(`Keep-alive server running on port ${PORT}`);
+});
+
 async function joinVC(client, config) {
     try {
         const guild = client.guilds.cache.get(config.Guild);
