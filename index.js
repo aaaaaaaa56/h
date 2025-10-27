@@ -5,13 +5,20 @@ const express = require('express');
 
 const Care = new Client({
     checkUpdate: false,
-    readyStatus: true,
+    captchaService: 'custom',
+    captchaWithProxy: false,
+    captchaSolver: function (captcha, userAgent) {
+        console.log('Captcha detected');
+        return;
+    },
     ws: { 
         properties: {
             browser: 'Discord Client',
             os: 'Windows'
         }
-    }
+    },
+    // إضافة هذه الإعدادات المهمة
+    partials: ['MESSAGE', 'CHANNEL', 'REACTION']
 });
 
 const careStore = require('./careStore');
@@ -69,14 +76,21 @@ Care.on('ready', async () => {
     }, 3000);
 });
 
-Care.on('messageCreate', async (message) => {
+// تغيير من messageCreate إلى message
+Care.on('message', async (message) => {
+    // تأكد إن الرسالة منك
     if (message.author.id !== Care.user.id) return;
+    
+    // تجاهل الرسائل من البوتات
+    if (message.author.bot) return;
     
     const content = message.content.trim();
     const args = content.split(' ');
     const command = args[0];
     
-    // Play song
+    console.log('Received command: ' + content); // للتأكد من استلام الرسالة
+    
+    // تشغيل اغنية
     if (command === 'ش') {
         const query = args.slice(1).join(' ');
         
@@ -96,7 +110,7 @@ Care.on('messageCreate', async (message) => {
         return;
     }
     
-    // Stop
+    // ايقاف
     if (command === 'ايقاف' || command === 'stop') {
         if (player) {
             player.stop();
@@ -109,7 +123,7 @@ Care.on('messageCreate', async (message) => {
         return;
     }
     
-    // Skip
+    // تخطي
     if (command === 'تخطي' || command === 'skip') {
         if (player && currentSong) {
             const skipped = currentSong;
@@ -127,7 +141,7 @@ Care.on('messageCreate', async (message) => {
         return;
     }
     
-    // Volume control
+    // التحكم بالصوت
     if (command === 'صوت' || command === 'volume') {
         const vol = parseInt(args[1]);
         
@@ -146,7 +160,7 @@ Care.on('messageCreate', async (message) => {
         return;
     }
     
-    // Show queue
+    // عرض القائمة
     if (command === 'قائمة' || command === 'queue') {
         if (queue.length === 0 && !currentSong) {
             message.reply('Queue is empty');
@@ -170,14 +184,14 @@ Care.on('messageCreate', async (message) => {
         return;
     }
     
-    // Loop toggle
+    // تكرار
     if (command === 'تكرار' || command === 'loop') {
         isLooping = !isLooping;
         message.reply(isLooping ? 'Loop enabled' : 'Loop disabled');
         return;
     }
     
-    // Song info
+    // معلومات الاغنية
     if (command === 'معلومات' || command === 'info') {
         if (!currentSong) {
             message.reply('No song is currently playing');
@@ -191,7 +205,7 @@ Care.on('messageCreate', async (message) => {
         return;
     }
     
-    // Save to favorites
+    // حفظ في المفضلة
     if (command === 'حفظ' || command === 'save') {
         if (!currentSong) {
             message.reply('No song is currently playing');
@@ -207,7 +221,7 @@ Care.on('messageCreate', async (message) => {
         return;
     }
     
-    // Show favorites
+    // عرض المفضلة
     if (command === 'مفضلة' || command === 'favorites') {
         if (favorites.length === 0) {
             message.reply('No saved songs');
@@ -223,14 +237,14 @@ Care.on('messageCreate', async (message) => {
         return;
     }
     
-    // Clear queue
+    // مسح القائمة
     if (command === 'مسح' || command === 'clear') {
         queue = [];
         message.reply('Queue cleared');
         return;
     }
     
-    // Pause
+    // وقف مؤقت
     if (command === 'وقف' || command === 'pause') {
         if (player) {
             player.pause();
@@ -239,7 +253,7 @@ Care.on('messageCreate', async (message) => {
         return;
     }
     
-    // Resume
+    // استئناف
     if (command === 'استئناف' || command === 'resume') {
         if (player) {
             player.unpause();
